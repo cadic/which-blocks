@@ -1,0 +1,9 @@
+.github
+.gitignore
+.distignore
+.nvmrc
+composer.json
+composer.lock
+package.json
+package.lock
+phpcs.xml.dist
