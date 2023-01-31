@@ -1,0 +1,17 @@
+{
+  "name": "which-blocks",
+  "version": "0.1.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cadic/which-blocks.git"
+  },
+  "author": "",
+  "license": "GPL2",
+  "bugs": {
+    "url": "https://github.com/cadic/which-blocks/issues"
+  },
+  "homepage": "https://github.com/cadic/which-blocks#readme"
+}
