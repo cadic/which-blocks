@@ -4,6 +4,7 @@
 .nvmrc
 composer.json
 composer.lock
+node_modules
 package.json
-package.lock
+package-lock.json
 phpcs.xml.dist

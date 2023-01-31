@@ -2,7 +2,7 @@
   "name": "which-blocks",
   "version": "0.1.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "archive": "rm -rf build && rm -rf $npm_package_name && rsync -av --exclude-from=.distignore . build/ && cd build && zip -r $npm_package_name.zip * && cd .. && cp build/$npm_package_name.zip ./ && rm -rf build"
   },
   "repository": {
     "type": "git",
