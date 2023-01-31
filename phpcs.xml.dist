@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<ruleset name="Which Blocks Rules">
+	<rule ref="10up-Default" />
+	<file>.</file>
+    <exclude-pattern>vendor</exclude-pattern>
+</ruleset>

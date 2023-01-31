@@ -1,0 +1,27 @@
+{
+  "name": "cadic/which-blocks",
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  },
+  "authors": [
+    {
+      "name": "Max Lyuchin",
+      "email": "maxim.lyuchin@gmail.com"
+    }
+  ],
+  "scripts": {
+    "lint": [
+      "phpcs ."
+    ]
+  },
+  "require-dev": {
+    "10up/phpcs-composer": "dev-master"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  }
+}
