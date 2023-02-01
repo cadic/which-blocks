@@ -26,8 +26,8 @@ class Tools_Page {
 	 */
 	public function add_page() {
 		add_management_page(
-			__( 'Which BLocks', 'which-blocks' ),
-			__( 'Which BLocks', 'which-blocks' ),
+			__( 'Which Blocks', 'which-blocks' ),
+			__( 'Which Blocks', 'which-blocks' ),
 			'edit_posts',
 			'which-blocks',
 			array( $this, 'render_page' )
