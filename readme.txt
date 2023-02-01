@@ -14,7 +14,13 @@ Get blocks usage statistics across the site.
 
 Get information for most used blocks on the single page.
 
-=== Which post types to look for ===
+== Frequently Asked Questions ==
+
+= Where is block usage statistics =
+
+Admin menu: Tools > Which Blocks
+
+= How to search in post types other than Post and Page =
 
 By default, the plugin only search in Posts and Pages. If you want to enhance the list of post types, use the filter:
 
