@@ -7,6 +7,8 @@
 
 namespace WhichBlocks;
 
+use WP_Block_Type_Registry;
+
 /**
  * Statistics class
  */
@@ -15,57 +17,62 @@ class Stats {
 	/**
 	 * Get usage of blocks
 	 *
+	 * @param array $args Search arguments.
 	 * @return array
 	 */
-	public static function get_usage() {
-		$post_types = apply_filters( 'which_blocks_post_types', array( 'page', 'post' ) );
+	public static function get_usage( $args = array() ) {
+		global $wpdb;
 
-		$posts = get_posts(
+		$args = wp_parse_args(
+			$args,
 			array(
-				'post_type'      => $post_types,
-				'posts_per_page' => -1,
-				'post_status'    => 'publish',
-				'fields'         => 'ids',
+				'post_type'   => array( 'post', 'page' ),
+				'post_status' => 'publish',
+				'blocks'      => 'all',
+				'orderby'     => 'cnt',
+				'order'       => 'DESC',
 			)
 		);
 
-		$all_blocks = array();
+		$args = apply_filters( 'which_blocks_args', $args );
 
-		foreach ( $posts as $post_id ) {
-			$post = get_post( $post_id );
-
-			if ( has_blocks( $post ) ) {
-				$blocks = parse_blocks( $post->post_content );
-				foreach ( $blocks as $block ) {
-					$block_name = $block['blockName'];
-
-					// Skip the block with no name.
-					if ( is_null( $block_name ) ) {
-						continue;
-					}
-
-					// Initialize the first appearance of a block.
-					if ( ! isset( $all_blocks[ $block_name ] ) ) {
-						$all_blocks[ $block_name ] = array(
-							'name'  => $block_name,
-							'count' => array(
-								// Need to pre-fill this to be at first position.
-								'post' => 0,
-								'page' => 0,
-							),
-						);
-					}
-
-					if ( isset( $all_blocks[ $block_name ]['count'][ $post->post_type ] ) ) {
-						$all_blocks[ $block_name ]['count'][ $post->post_type ]++;
-					} else {
-						$all_blocks[ $block_name ]['count'][ $post->post_type ] = 1;
-					}
-				}
-			}
+		if ( ! is_array( $args['post_type'] ) ) {
+			$args['post_type'] = array( $args['post_type'] );
 		}
 
-		uasort( $all_blocks, array( self::class, 'sort' ) );
+		if ( ! is_array( $args['post_status'] ) ) {
+			$args['post_status'] = array( $args['post_status'] );
+		}
+
+		$blocks = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
+		$blocks = apply_filters( 'which_blocks_list', $blocks );
+
+		if ( ! is_array( $blocks ) || ! count( $blocks ) ) {
+			return array();
+		}
+
+		$case = array();
+		foreach ( $blocks as $block ) {
+			if ( 'core/' === substr( $block, 0, 5 ) ) {
+				$block_name = substr( $block, 5 );
+			} else {
+				$block_name = $block;
+			}
+			$search_pattern = '<!-- wp:' . $block_name . ' ';
+
+			$case[] = $wpdb->prepare( 'WHEN post_content LIKE %s THEN %s', '%' . $wpdb->esc_like( $search_pattern ) . '%', $block );
+		}
+
+		$sql = 'SELECT (CASE ' . join( ' ', $case ) . ' END) AS block_name, COUNT(*) as cnt FROM wp_posts GROUP BY (CASE ' . join( ' ', $case ) . ' END) ORDER BY cnt DESC';
+
+		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on previous steps.
+
+		$all_blocks = array_filter(
+			$results,
+			function( $item ) {
+				return ! is_null( $item->block_name );
+			}
+		);
 
 		return apply_filters( 'which_blocks_get_usage', $all_blocks );
 	}

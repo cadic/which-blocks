@@ -21,7 +21,15 @@ class Blocks_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
-		$this->items = Stats::get_usage();
+		$usage = Stats::get_usage();
+		$items = array();
+		foreach ( $usage as $block_data ) {
+			$items[] = array(
+				'name'  => $block_data->block_name,
+				'count' => $block_data->cnt,
+			);
+		}
+		$this->items = $items;
 	}
 
 	/**
@@ -49,7 +57,8 @@ class Blocks_List_Table extends WP_List_Table {
 
 		$block = WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
 
-		return $block->title ?? $block_name;
+		// Show block title and the name.
+		return ( ! empty( $block->title ) ? $block->title . ', ' : '' ) . $block_name;
 	}
 
 	/**
@@ -59,17 +68,6 @@ class Blocks_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_usage( $item ) {
-		// translators: total amount
-		$total = sprintf( __( 'Total: %s', 'which-blocks' ), array_sum( $item['count'] ) );
-
-		$post_types = array();
-
-		foreach ( $item['count'] as $post_type => $count ) {
-			if ( $count > 0 ) {
-				$post_types[] = $post_type . ': ' . $count;
-			}
-		}
-
-		return '<strong>' . $total . '</strong>, ' . join( ', ', $post_types );
+		return $item['count'];
 	}
 }
