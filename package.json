@@ -2,9 +2,9 @@
   "name": "which-blocks",
   "version": "0.1.0",
   "scripts": {
-	"build": "composer install --no-dev",
-	"build:dev": "composer install",
-	"postbuild": "archive",
+    "build": "composer install --no-dev",
+    "build:dev": "composer install",
+    "postbuild": "archive",
     "archive": "rm -rf build && rm -rf $npm_package_name && rsync -av --exclude-from=.distignore . build/ && cd build && zip -r $npm_package_name.zip * && cd .. && cp build/$npm_package_name.zip ./ && rm -rf build"
   },
   "repository": {
