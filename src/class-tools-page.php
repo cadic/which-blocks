@@ -49,9 +49,6 @@ class Tools_Page {
 			<?php $list_table->views(); ?>
 			<form method="post" id="bulk-action-form">
 
-			<input type="hidden" name="plugin_status" value="<?php echo esc_attr( $status ); ?>" />
-			<input type="hidden" name="paged" value="<?php echo esc_attr( $page ); ?>" />
-
 			<?php $list_table->display(); ?>
 
 			</form>
