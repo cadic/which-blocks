@@ -26,9 +26,9 @@ class Stats {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'post_type'   => array( 'post', 'page' ),
-				'post_status' => 'publish',
-				'blocks'      => 'all',
+				'post_type'   => 'any',
+				'post_status' => 'any',
+				'blocks'      => 'any',
 				'orderby'     => 'cnt',
 				'order'       => 'DESC',
 			)
@@ -36,16 +36,25 @@ class Stats {
 
 		$args = apply_filters( 'which_blocks_args', $args );
 
-		if ( ! is_array( $args['post_type'] ) ) {
+		if ( 'any' === $args['post_type'] ) {
+			$args['post_type'] = array();
+		} elseif ( ! is_array( $args['post_type'] ) ) {
 			$args['post_type'] = array( $args['post_type'] );
 		}
 
-		if ( ! is_array( $args['post_status'] ) ) {
+		if ( 'any' === $args['post_status'] ) {
+			$args['post_status'] = array();
+		} elseif ( ! is_array( $args['post_status'] ) ) {
 			$args['post_status'] = array( $args['post_status'] );
 		}
 
-		$blocks = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
-		$blocks = apply_filters( 'which_blocks_list', $blocks );
+		if ( 'any' === $args['blocks'] ) {
+			$blocks = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
+		} elseif ( is_array( $args['blocks'] ) ) {
+			$blocks = $args['blocks'];
+		} elseif ( is_string( $args['blocks'] ) ) {
+			$blocks = array( $args['blocks'] );
+		}
 
 		if ( ! is_array( $blocks ) || ! count( $blocks ) ) {
 			return array();
@@ -63,7 +72,23 @@ class Stats {
 			$case[] = $wpdb->prepare( 'WHEN post_content LIKE %s THEN %s', '%' . $wpdb->esc_like( $search_pattern ) . '%', $block );
 		}
 
-		$sql = 'SELECT (CASE ' . join( ' ', $case ) . ' END) AS block_name, COUNT(*) as cnt FROM ' . $wpdb->posts . ' GROUP BY (CASE ' . join( ' ', $case ) . ' END) ORDER BY cnt DESC';
+		$where_clauses = array();
+
+		if ( count( $args['post_type'] ) ) {
+			$where_clauses[] .= $wpdb->prepare( 'post_type IN (' . implode( ',', array_fill( 0, count( $args['post_type'] ), '%s' ) ) . ')', $args['post_type'] );
+		}
+
+		if ( count( $args['post_status'] ) ) {
+			$where_clauses[] .= $wpdb->prepare( 'post_status IN (' . implode( ',', array_fill( 0, count( $args['post_status'] ), '%s' ) ) . ')', $args['post_status'] );
+		}
+
+		if ( count( $where_clauses ) ) {
+			$where = 'WHERE ' . join( ' AND ', $where_clauses );
+		} else {
+			$where = '';
+		}
+
+		$sql = 'SELECT (CASE ' . join( ' ', $case ) . ' END) AS block_name, COUNT(*) as cnt FROM ' . $wpdb->posts . ' ' . $where . ' GROUP BY (CASE ' . join( ' ', $case ) . ' END) ORDER BY cnt DESC';
 
 		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on previous steps.
 
