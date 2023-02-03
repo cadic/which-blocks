@@ -28,4 +28,4 @@ jobs:
       run: composer install
 
     - name: Test
-      run: ./vendor/bin/phpcs -v
+      run: composer run lint .

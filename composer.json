@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "lint": [
-      "phpcs ."
+      "phpcs"
     ]
   },
   "require-dev": {
