@@ -20,18 +20,6 @@ Get information for most used blocks on the single page.
 
 Admin menu: Tools > Which Blocks
 
-= How to search in post types other than Post and Page =
-
-By default, the plugin only search in Posts and Pages. If you want to enhance the list of post types, use the filter:
-
-`<?php
-add_filter( 'which_blocks_post_types', 'my_which_blocks_post_types' );
-function my_which_blocks_post_types( $post_types ) {
-	$post_types[] = 'my_custom_post_type';
-	return $post_types;
-}
-`
-
 == Installation ==
 1. Install the plugin via the plugin installer, either by searching for it or uploading a .zip file.
 2. Activate the plugin.
