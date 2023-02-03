@@ -40,7 +40,7 @@ class Blocks_List_Table extends WP_List_Table {
 	public function get_columns() {
 		$columns = array(
 			'name'  => __( 'Block name', 'which-blocks' ),
-			'usage' => __( 'Usage', 'which-blocks' ),
+			'usage' => __( 'Posts', 'which-blocks' ),
 		);
 
 		return $columns;
