@@ -7,7 +7,7 @@
  * Author URI:      https://lyuchin.com/
  * Text Domain:     which-blocks
  * Domain Path:     /languages
- * Version:         0.1.0
+ * Version:         1.0.0
  *
  * @package         Which_Blocks
  */

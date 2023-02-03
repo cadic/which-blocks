@@ -1,0 +1,11 @@
+{
+  "plugins": ["."],
+  "env": {
+    "tests": {
+      "mappings": {
+        "wp-cli.yml": "./tests/bin/wp-cli.yml",
+        "which-blocks.xml": "./tests/cypress/fixtures/which-blocks.xml"
+      }
+    }
+  }
+}

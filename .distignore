@@ -1,10 +1,16 @@
+.git
 .github
 .gitignore
 .distignore
 .nvmrc
+.wp-env.json
+.wp-env.override.json
+.DS_Store
 composer.json
 composer.lock
 node_modules
 package.json
 package-lock.json
 phpcs.xml.dist
+tests
+*.zip

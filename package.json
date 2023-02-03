@@ -1,11 +1,17 @@
 {
   "name": "which-blocks",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
     "build": "composer install --no-dev",
     "build:dev": "composer install",
-    "postbuild": "archive",
-    "archive": "rm -rf build && rm -rf $npm_package_name && rsync -av --exclude-from=.distignore . build/ && cd build && zip -r $npm_package_name.zip * && cd .. && cp build/$npm_package_name.zip ./ && rm -rf build"
+    "postbuild": "npm run archive",
+    "archive": "rm -rf build && rm -rf $npm_package_name && rsync -av --exclude-from=.distignore . build/ && cd build && zip -r $npm_package_name.zip * && cd .. && cp build/$npm_package_name.zip ./ && rm -rf build",
+    "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
+    "cypress:run": "cypress run --config-file tests/cypress/config.js",
+    "env": "wp-env",
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "postenv:start": "./tests/bin/initialize.sh"
   },
   "repository": {
     "type": "git",
@@ -16,5 +22,10 @@
   "bugs": {
     "url": "https://github.com/cadic/which-blocks/issues"
   },
-  "homepage": "https://github.com/cadic/which-blocks#readme"
+  "homepage": "https://github.com/cadic/which-blocks#readme",
+  "devDependencies": {
+    "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#build",
+    "@wordpress/env": "^5.11.0",
+    "cypress": "^11.2.0"
+  }
 }
