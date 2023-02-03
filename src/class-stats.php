@@ -54,6 +54,12 @@ class Stats {
 			$blocks = array( $args['blocks'] );
 		}
 
+		/**
+		 * Filter wich blocks get usage arguments before building the SQL
+		 *
+		 * @param array $args Arguments array.
+		 * @return array
+		 */
 		$args = apply_filters( 'which_blocks_get_usage_args', $args );
 
 		if ( ! is_array( $blocks ) || ! count( $blocks ) ) {
@@ -106,6 +112,12 @@ class Stats {
 			}
 		);
 
+		/**
+		 * Filter the results of which blocks get usage
+		 *
+		 * @param array $all_blocks Resulting array with all blocks and count of posts containing each block.
+		 * @return array
+		 */
 		return apply_filters( 'which_blocks_get_usage', $all_blocks );
 	}
 
