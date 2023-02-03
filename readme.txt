@@ -12,7 +12,7 @@ Get blocks usage statistics across the site.
 
 == Description ==
 
-Get information for most used blocks on the single page.
+Display the statistics of block usage across the site. Showing how much posts are using every block type.
 
 == Frequently Asked Questions ==
 
@@ -27,5 +27,5 @@ Admin menu: Tools > Which Blocks
 
 == Changelog ==
 
-= 1.0 =
+= 1.0.0 =
 * Initial plugin release.
