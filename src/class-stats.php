@@ -26,15 +26,13 @@ class Stats {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'post_type'   => 'any',
-				'post_status' => 'any',
+				'post_type'   => array( 'post', 'page' ),
+				'post_status' => 'publish',
 				'blocks'      => 'any',
 				'orderby'     => 'cnt',
 				'order'       => 'DESC',
 			)
 		);
-
-		$args = apply_filters( 'which_blocks_args', $args );
 
 		if ( 'any' === $args['post_type'] ) {
 			$args['post_type'] = array();
@@ -56,20 +54,10 @@ class Stats {
 			$blocks = array( $args['blocks'] );
 		}
 
+		$args = apply_filters( 'which_blocks_get_usage_args', $args );
+
 		if ( ! is_array( $blocks ) || ! count( $blocks ) ) {
 			return array();
-		}
-
-		$case = array();
-		foreach ( $blocks as $block ) {
-			if ( 'core/' === substr( $block, 0, 5 ) ) {
-				$block_name = substr( $block, 5 );
-			} else {
-				$block_name = $block;
-			}
-			$search_pattern = '<!-- wp:' . $block_name . ' ';
-
-			$case[] = $wpdb->prepare( 'WHEN post_content LIKE %s THEN %s', '%' . $wpdb->esc_like( $search_pattern ) . '%', $block );
 		}
 
 		$where_clauses = array();
@@ -83,12 +71,31 @@ class Stats {
 		}
 
 		if ( count( $where_clauses ) ) {
-			$where = 'WHERE ' . join( ' AND ', $where_clauses );
+			$where = join( ' AND ', $where_clauses );
 		} else {
 			$where = '';
 		}
 
-		$sql = 'SELECT (CASE ' . join( ' ', $case ) . ' END) AS block_name, COUNT(*) as cnt FROM ' . $wpdb->posts . ' ' . $where . ' GROUP BY (CASE ' . join( ' ', $case ) . ' END) ORDER BY cnt DESC';
+		$queries = array();
+
+		foreach ( $blocks as $block ) {
+			if ( 'core/' === substr( $block, 0, 5 ) ) {
+				$block_name = substr( $block, 5 );
+			} else {
+				$block_name = $block;
+			}
+			$search_pattern = '<!-- wp:' . $block_name . ' ';
+
+			$block_where = $wpdb->prepare( 'WHERE post_content LIKE %s', '%' . $wpdb->esc_like( $search_pattern ) . '%' );
+			if ( $where ) {
+				$block_where .= ' AND ' . $where;
+			}
+
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $block_where is prepared.
+			$queries[] = $wpdb->prepare( "(SELECT %s as block_name, COUNT(*) as cnt FROM {$wpdb->posts} " . $block_where . ' GROUP BY %s)', $block, $block );
+		}
+
+		$sql = join( ' UNION ', $queries ) . ' ORDER BY cnt DESC';
 
 		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on previous steps.
 
