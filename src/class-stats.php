@@ -63,7 +63,7 @@ class Stats {
 			$case[] = $wpdb->prepare( 'WHEN post_content LIKE %s THEN %s', '%' . $wpdb->esc_like( $search_pattern ) . '%', $block );
 		}
 
-		$sql = 'SELECT (CASE ' . join( ' ', $case ) . ' END) AS block_name, COUNT(*) as cnt FROM wp_posts GROUP BY (CASE ' . join( ' ', $case ) . ' END) ORDER BY cnt DESC';
+		$sql = 'SELECT (CASE ' . join( ' ', $case ) . ' END) AS block_name, COUNT(*) as cnt FROM ' . $wpdb->posts . ' GROUP BY (CASE ' . join( ' ', $case ) . ' END) ORDER BY cnt DESC';
 
 		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on previous steps.
 
