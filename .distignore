@@ -2,6 +2,7 @@
 .github
 .gitignore
 .distignore
+.husky
 .nvmrc
 .wp-env.json
 .wp-env.override.json
