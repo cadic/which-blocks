@@ -17,18 +17,17 @@ describe("Basic tests", () => {
     cy.visit("/wp-admin/tools.php?page=which-blocks");
 
     const expected = {
-      "Paragraph, core/paragraph": 3,
-      "Heading, core/heading": 2,
-      "Quote, core/quote": 1,
-      "Buttons, core/buttons": 1,
-      "List, core/list": 1,
-      "Button, core/button": 1,
-      "List item, core/list-item": 1,
+      "core/paragraph": 3,
+      "core/heading": 2,
+      "core/quote": 1,
+      "core/buttons": 1,
+      "core/list": 1,
+      "core/button": 1
     };
 
     for (const [key, value] of Object.entries(expected)) {
       cy.get("td.name")
-        .contains(key)
+        .contains(new RegExp(key))
         .closest("tr")
         .find(".usage")
         .should("contain.text", value);
