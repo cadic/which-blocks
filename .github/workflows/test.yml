@@ -22,6 +22,7 @@ jobs:
       with:
         path: |
           ./node_modules
+          $HOME/.cache/Cypress
           ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
@@ -62,6 +63,7 @@ jobs:
       with:
         path: |
           ./node_modules
+          $HOME/.cache/Cypress
           ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
@@ -94,6 +96,7 @@ jobs:
       with:
         path: |
           ./node_modules
+          $HOME/.cache/Cypress
           ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
