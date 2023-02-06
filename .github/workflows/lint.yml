@@ -7,27 +7,26 @@ on:
 jobs:
   phpcs:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-
     - uses: shivammathur/setup-php@v2
       with:
         php-version: '7.4'
         coverage: none
         tools: composer:v2
-
-    - uses: actions/setup-node@v3
-      with:
-        node-version-file: '.nvmrc'
-
     - name: Install dependencies
-      run: |
-        composer install
-        npm install
-
+      run: composer install
     - name: Lint PHP
       run: composer run lint .
 
+  js:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - name: Install dependencies
+      run: npm install
     - name: Lint JS
       run: npm run lint:js
