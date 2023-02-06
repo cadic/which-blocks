@@ -8,6 +8,7 @@
     "prepare": "husky install",
     "lint": "npm run lint:php",
     "lint:php": "composer run lint",
+	"lint:js": "10up-toolkit lint-js",
     "archive": "rm -rf build && rm -rf $npm_package_name && rsync -av --exclude-from=.distignore . build/ && cd build && zip -r $npm_package_name.zip * && cd .. && cp build/$npm_package_name.zip ./ && rm -rf build",
     "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
     "cypress:run": "cypress run --config-file tests/cypress/config.js",
@@ -29,13 +30,18 @@
   "devDependencies": {
     "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#build",
     "@wordpress/env": "^5.11.0",
+    "10up-toolkit": "^4.3.1",
     "cypress": "^11.2.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.0"
   },
   "lint-staged": {
     "*.php": [
       "composer run lint"
+    ],
+    "*.js": [
+      "npx 10up-toolkit format-js"
     ]
   }
 }

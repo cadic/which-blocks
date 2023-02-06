@@ -1,0 +1,106 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [develop, trunk]
+
+jobs:
+  cache:
+    name: Cache
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "node-cache-dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+    - uses: actions/cache@v3
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install dependencies
+      run: npm install
+
+  phpcs:
+    name: Lint PHP
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        coverage: none
+        tools: composer:v2
+    - name: Install dependencies
+      run: composer install
+    - name: Lint PHP
+      run: composer run lint .
+
+  jslint:
+    name: Lint JS
+    needs: cache
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "node-cache-dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+    - uses: actions/cache@v3
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install dependencies
+      run: npm install
+    - name: Lint JS
+      run: npm run lint:js
+
+  cypress:
+    name: E2E ${{ matrix.core.name }}
+    needs: [jslint, phpcs, cache]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        core:
+          - {name: 'WP latest', version: 'latest'}
+          - {name: 'WP 5.7', version: 'WordPress/WordPress#5.7'}
+          - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "node-cache-dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+    - uses: actions/cache@v3
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install dependencies
+      run: npm install
+    - name: Build (optional)
+      run: npm run build
+    - name: Set the core version
+      run: ./tests/bin/set-core-version.js ${{ matrix.core.version }}
+    - name: Set up WP environment
+      run: npm run env:start
+    - name: Test
+      run: npm run cypress:run
