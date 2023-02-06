@@ -26,6 +26,17 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version-file: '.nvmrc'
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "node-cache-dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+    - uses: actions/cache@v3
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
     - name: Install dependencies
       run: npm install
     - name: Lint JS
