@@ -6,7 +6,7 @@ on:
 
 jobs:
   cache:
-    name: Cache
+    name: Cache the Node
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -20,12 +20,14 @@ jobs:
     - uses: actions/cache@v3
       id: npm-cache
       with:
-        path: ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
+        path: |
+          ./node_modules
+          ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
   phpcs:
     name: Lint PHP
@@ -58,12 +60,12 @@ jobs:
     - uses: actions/cache@v3
       id: npm-cache
       with:
-        path: ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
+        path: |
+          ./node_modules
+          ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - name: Install dependencies
-      run: npm install
     - name: Lint JS
       run: npm run lint:js
 
@@ -90,12 +92,12 @@ jobs:
     - uses: actions/cache@v3
       id: npm-cache
       with:
-        path: ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
+        path: |
+          ./node_modules
+          ${{ steps.npm-cache-dir.outputs.node-cache-dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - name: Install dependencies
-      run: npm install
     - name: Build (optional)
       run: npm run build
     - name: Set the core version
