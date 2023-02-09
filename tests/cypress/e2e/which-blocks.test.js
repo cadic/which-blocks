@@ -18,8 +18,8 @@ describe('Basic tests', () => {
 		cy.visit('/wp-admin/tools.php?page=which-blocks');
 
 		const expected = {
-			'core/heading': 2,
 			'core/paragraph': 3,
+			'core/heading': 2,
 			'core/quote': 1,
 			'core/buttons': 1,
 			'core/list': 1,
