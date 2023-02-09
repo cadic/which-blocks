@@ -41,10 +41,16 @@ jobs:
     - run: |
         echo ${{ steps.php.outputs.any_changed }} ${{ steps.js.outputs.any_changed }} ${{ steps.plugin.outputs.any_changed }}
 
+  debug:
+    runs-on: ubuntu-latest
+    needs: changed
+    steps:
+    - run: echo ${{ needs.changed.outputs.php }} echo ${{ needs.changed.outputs.js }} echo ${{ needs.changed.outputs.plugin }}
+
   cache:
     name: Cache the Node
     needs: changed
-    if: ${{ needs.changed.plugin == 'true' }}
+    if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -71,7 +77,7 @@ jobs:
   phpcs:
     name: Lint PHP
     needs: changed
-    if: ${{ needs.changed.php == 'true' }}
+    if: ${{ needs.changed.outputs.php == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -88,7 +94,7 @@ jobs:
   jslint:
     name: Lint JS
     needs: [cache, changed]
-    if: ${{ needs.changed.js == 'true' }}
+    if: ${{ needs.changed.outputs.js == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -115,7 +121,7 @@ jobs:
   cypress:
     name: E2E ${{ matrix.core.name }}
     needs: [changed, jslint, phpcs, cache]
-    if: ${{ needs.changed.plugin == 'true' }}
+    if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
