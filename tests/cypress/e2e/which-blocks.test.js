@@ -10,6 +10,7 @@ describe('Basic tests', () => {
 
 	it('Should see menu link', () => {
 		cy.visit('/wp-admin/tools.php');
+
 		cy.get('#menu-tools li a').contains('Which Blocks');
 	});
 
