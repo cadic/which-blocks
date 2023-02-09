@@ -38,6 +38,8 @@ jobs:
           composer.json
           composer.lock
           .wp-env.json
+    - run: |
+        echo ${{ steps.php.outputs.any_changed }} ${{ steps.js.outputs.any_changed }} ${{ steps.plugin.outputs.any_changed }}
 
   cache:
     name: Cache the Node
