@@ -27,5 +27,5 @@ Admin menu: Tools > Which Blocks
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.0 - 09.02.2023 = 
 * Initial plugin release.
