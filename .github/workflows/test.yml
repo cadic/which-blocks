@@ -5,8 +5,29 @@ on:
     branches: [develop, trunk]
 
 jobs:
+  changed:
+    outputs:
+      plugin: ${{ steps.plugin.outputs.any_changed }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: tj-actions/changed-files@v35
+      id: plugin
+      with:
+        files: |
+          which-blocks.php
+          src/**/*.php
+          tests/**/*
+          package.json
+          package-lock.json
+          composer.json
+          composer.lock
+          .wp-env.json
+         
   cache:
     name: Cache the Node
+    needs: changed
+    if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -32,6 +53,8 @@ jobs:
 
   phpcs:
     name: Lint PHP
+    needs: changed
+    if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -47,7 +70,8 @@ jobs:
 
   jslint:
     name: Lint JS
-    needs: cache
+    needs: [cache, changed]
+    if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -73,7 +97,8 @@ jobs:
 
   cypress:
     name: E2E ${{ matrix.core.name }}
-    needs: [jslint, phpcs, cache]
+    needs: [changed, jslint, phpcs, cache]
+    if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
