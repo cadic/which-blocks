@@ -20,7 +20,12 @@ Display the statistics of block usage across the site. Showing how much posts ar
 
 Admin menu: Tools > Which Blocks
 
+== Screenshots ==
+
+1. This is an example of the plugin results screen.
+
 == Installation ==
+
 1. Install the plugin via the plugin installer, either by searching for it or uploading a .zip file.
 2. Activate the plugin.
 3. Head to Tools → Which Blocks to see all blocks from the website and their usage.
