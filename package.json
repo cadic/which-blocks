@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/cadic/which-blocks#readme",
   "devDependencies": {
-    "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#build",
+    "@10up/cypress-wp-utils": "^0.1.0",
     "@wordpress/env": "^5.11.0",
     "10up-toolkit": "^4.3.1",
     "cypress": "^11.2.0",
