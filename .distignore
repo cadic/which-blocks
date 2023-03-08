@@ -16,5 +16,6 @@ node_modules
 package.json
 package-lock.json
 phpcs.xml.dist
+phpunit.xml.dist
 tests
 *.zip

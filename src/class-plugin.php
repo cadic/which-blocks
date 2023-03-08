@@ -13,6 +13,13 @@ namespace WhichBlocks;
 class Plugin {
 
 	/**
+	 * Instance of the Tools Page
+	 *
+	 * @var Tools_Page
+	 */
+	public $tools_page = null;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -25,6 +32,6 @@ class Plugin {
 	 * @return void
 	 */
 	public function init() {
-		new Tools_Page();
+		$this->tools_page = new Tools_Page();
 	}
 }
