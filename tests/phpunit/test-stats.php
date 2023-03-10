@@ -174,7 +174,7 @@ class StatsTests extends \WP_Mock\Tools\TestCase {
 					'order'       => 'DESC',
 				),
 			),
-			'Any blocks' => array(
+			'Any blocks'         => array(
 				'args'     => array( 'blocks' => 'any' ),
 				'expected' => array(
 					'post_type'   => array( 'post', 'page' ),
@@ -184,12 +184,12 @@ class StatsTests extends \WP_Mock\Tools\TestCase {
 					'order'       => 'DESC',
 				),
 			),
-			'String block' => array(
+			'String block'       => array(
 				'args'     => array( 'blocks' => 'core/columns' ),
 				'expected' => array(
 					'post_type'   => array( 'post', 'page' ),
 					'post_status' => array( 'publish' ),
-					'blocks'      => [ 'core/columns' ],
+					'blocks'      => array( 'core/columns' ),
 					'orderby'     => 'cnt',
 					'order'       => 'DESC',
 				),
