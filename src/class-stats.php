@@ -23,46 +23,9 @@ class Stats {
 	public static function get_usage( $args = array() ) {
 		global $wpdb;
 
-		$args = wp_parse_args(
-			$args,
-			array(
-				'post_type'   => array( 'post', 'page' ),
-				'post_status' => 'publish',
-				'blocks'      => 'any',
-				'orderby'     => 'cnt',
-				'order'       => 'DESC',
-			)
-		);
+		$args = self::get_usage_args( $args );
 
-		if ( 'any' === $args['post_type'] ) {
-			$args['post_type'] = array();
-		} elseif ( ! is_array( $args['post_type'] ) ) {
-			$args['post_type'] = array( $args['post_type'] );
-		}
-
-		if ( 'any' === $args['post_status'] ) {
-			$args['post_status'] = array();
-		} elseif ( ! is_array( $args['post_status'] ) ) {
-			$args['post_status'] = array( $args['post_status'] );
-		}
-
-		if ( 'any' === $args['blocks'] ) {
-			$blocks = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
-		} elseif ( is_array( $args['blocks'] ) ) {
-			$blocks = $args['blocks'];
-		} elseif ( is_string( $args['blocks'] ) ) {
-			$blocks = array( $args['blocks'] );
-		}
-
-		/**
-		 * Filter wich blocks get usage arguments before building the SQL
-		 *
-		 * @param array $args Arguments array.
-		 * @return array
-		 */
-		$args = apply_filters( 'which_blocks_get_usage_args', $args );
-
-		if ( ! is_array( $blocks ) || ! count( $blocks ) ) {
+		if ( ! is_array( $args['blocks'] ) || ! count( $args['blocks'] ) ) {
 			return array();
 		}
 
@@ -84,7 +47,7 @@ class Stats {
 
 		$queries = array();
 
-		foreach ( $blocks as $block ) {
+		foreach ( $args['blocks'] as $block ) {
 			if ( 'core/' === substr( $block, 0, 5 ) ) {
 				$block_name = substr( $block, 5 );
 			} else {
@@ -119,6 +82,53 @@ class Stats {
 		 * @return array
 		 */
 		return apply_filters( 'which_blocks_get_usage', $all_blocks );
+	}
+
+	/**
+	 * Prepare arguments for get_usage
+	 *
+	 * @param array $args Search arguments.
+	 * @return array
+	 */
+	public static function get_usage_args( $args ) {
+		$args = wp_parse_args(
+			$args,
+			array(
+				'post_type'   => array( 'post', 'page' ),
+				'post_status' => array( 'publish' ),
+				'blocks'      => 'any',
+				'orderby'     => 'cnt',
+				'order'       => 'DESC',
+			)
+		);
+
+		if ( 'any' === $args['post_type'] ) {
+			$args['post_type'] = array();
+		} elseif ( ! is_array( $args['post_type'] ) ) {
+			$args['post_type'] = array( $args['post_type'] );
+		}
+
+		if ( 'any' === $args['post_status'] ) {
+			$args['post_status'] = array();
+		} elseif ( ! is_array( $args['post_status'] ) ) {
+			$args['post_status'] = array( $args['post_status'] );
+		}
+
+		if ( 'any' === $args['blocks'] ) {
+			$args['blocks'] = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
+		} elseif ( is_array( $args['blocks'] ) ) {
+			$args['blocks'] = $args['blocks'];
+		} elseif ( is_string( $args['blocks'] ) ) {
+			$args['blocks'] = array( $args['blocks'] );
+		}
+
+		/**
+		 * Filter wich blocks get usage arguments before building the SQL
+		 *
+		 * @param array $args Arguments array.
+		 * @return array
+		 */
+		return apply_filters( 'which_blocks_get_usage_args', $args );
 	}
 
 	/**
