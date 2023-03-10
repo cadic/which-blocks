@@ -36,6 +36,15 @@ class StatsTests extends \WP_Mock\Tools\TestCase {
 				'core/image'     => null,
 			)
 		);
+
+		global $wpdb;
+
+		$wpdb = \Mockery::mock( 'alias:\WPDB' );
+		$wpdb->shouldReceive( 'prepare' )->andReturnUsing(
+			function( $format, $values ) {
+				return sprintf( $format, ...$values );
+			}
+		);
 	}
 	/**
 	 * Tear down WP Mock.
@@ -55,14 +64,23 @@ class StatsTests extends \WP_Mock\Tools\TestCase {
 	}
 
 	/**
-	 * @dataProvider data_provider_for_test_get_usage_args
+	 * @dataProvider data_provider_for_test_prepare_args
 	 */
-	public function test_get_usage_args( $args, $expected ) {
+	public function test_prepare_args( $args, $expected ) {
 		\WP_Mock::expectFilter( 'which_blocks_get_usage_args', $expected );
 
-		$actual = Stats::get_usage_args( $args );
+		$actual = Stats::prepare_args( $args );
 
 		$this->assertSame( $expected, $actual );
+	}
+
+	/**
+	 * @dataProvider data_provider_for_test_where_clauses
+	 */
+	public function test_where_clauses( $args, $expected ) {
+		$actual = Stats::where_clauses( $args );
+
+		$this->assertEqualsCanonicalizing( $expected, $actual );
 	}
 
 	public function data_provider_for_test_sort() {
@@ -122,7 +140,7 @@ class StatsTests extends \WP_Mock\Tools\TestCase {
 		);
 	}
 
-	public function data_provider_for_test_get_usage_args() {
+	public function data_provider_for_test_prepare_args() {
 		return array(
 			'Defaults'           => array(
 				'args'     => array(),
@@ -192,6 +210,45 @@ class StatsTests extends \WP_Mock\Tools\TestCase {
 					'blocks'      => array( 'core/columns' ),
 					'orderby'     => 'cnt',
 					'order'       => 'DESC',
+				),
+			),
+		);
+	}
+
+	public function data_provider_for_test_where_clauses() {
+		return array(
+			'Empty'             => array(
+				'args'     => array(),
+				'expected' => array(),
+			),
+			'Empty post type'   => array(
+				'args'     => array( 'post_type' => false ),
+				'expected' => array(),
+			),
+			'Empty post status' => array(
+				'args'     => array( 'post_status' => false ),
+				'expected' => array(),
+			),
+			'Post types'        => array(
+				'args'     => array( 'post_type' => array( 'post', 'custom' ) ),
+				'expected' => array(
+					'post_type IN (post,custom)',
+				),
+			),
+			'Post statuses'     => array(
+				'args'     => array( 'post_status' => array( 'draft', 'inherit' ) ),
+				'expected' => array(
+					'post_status IN (draft,inherit)',
+				),
+			),
+			'Both'              => array(
+				'args'     => array(
+					'post_type'   => array( 'post', 'custom' ),
+					'post_status' => array( 'draft', 'inherit' ),
+				),
+				'expected' => array(
+					'post_status IN (draft,inherit)',
+					'post_type IN (post,custom)',
 				),
 			),
 		);
