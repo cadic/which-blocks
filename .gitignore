@@ -1,4 +1,5 @@
 .DS_Store
+.phpunit.result.cache
 .wp-env.override.json
 /node_modules/
 /vendor/
