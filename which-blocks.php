@@ -14,6 +14,9 @@
 
 namespace WhichBlocks;
 
-require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+require_once dirname( __FILE__ ) . '/src/class-block-list-table';
+require_once dirname( __FILE__ ) . '/src/class-plugin.php';
+require_once dirname( __FILE__ ) . '/src/class-stats.php';
+require_once dirname( __FILE__ ) . '/src/class-tools-page.php';
 
 new Plugin();
