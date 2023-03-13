@@ -1,10 +1,5 @@
 {
   "name": "cadic/which-blocks",
-  "autoload": {
-    "classmap": [
-      "src/"
-    ]
-  },
   "authors": [
     {
       "name": "Max Lyuchin",
