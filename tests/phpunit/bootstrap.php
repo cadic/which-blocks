@@ -6,5 +6,9 @@
 
 define( 'TEST_PLUGIN_DIR', dirname( dirname( __DIR__ ) ) . '/' );
 
+require_once TEST_PLUGIN_DIR . 'src/class-plugin.php';
+require_once TEST_PLUGIN_DIR . 'src/class-stats.php';
+require_once TEST_PLUGIN_DIR . 'src/class-tools-page.php';
+
 // Now call the bootstrap method of WP Mock.
 WP_Mock::bootstrap();
