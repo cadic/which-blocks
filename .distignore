@@ -9,6 +9,8 @@
 .wp-env.json
 .wp-env.override.json
 .DS_Store
+.phpunit.cache
+coverage
 composer.json
 composer.lock
 LICENSE.md
@@ -16,5 +18,7 @@ node_modules
 package.json
 package-lock.json
 phpcs.xml.dist
+phpunit.xml.dist
+vendor
 tests
 *.zip

@@ -68,6 +68,23 @@ jobs:
     - name: Lint PHP
       run: composer run lint .
 
+  phpunit:
+    name: PHP Unit
+    needs: phpcs
+    if: ${{ needs.changed.outputs.plugin == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        coverage: none
+        tools: composer:v2
+    - name: Install dependencies
+      run: composer install
+    - name: Lint PHP
+      run: composer run unit
+
   jslint:
     name: Lint JS
     needs: [cache, changed]
@@ -97,7 +114,7 @@ jobs:
 
   cypress:
     name: E2E ${{ matrix.core.name }}
-    needs: [changed, jslint, phpcs, cache]
+    needs: [changed, jslint, phpcs, phpunit, cache]
     if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     strategy:

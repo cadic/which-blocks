@@ -23,11 +23,105 @@ class Stats {
 	public static function get_usage( $args = array() ) {
 		global $wpdb;
 
+		$args = self::prepare_args( $args );
+
+		if ( ! is_array( $args['blocks'] ) || ! count( $args['blocks'] ) ) {
+			return array();
+		}
+
+		$sql = self::prepare_sql( $args );
+
+		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on previous steps.
+
+		$all_blocks = array_filter(
+			$results,
+			function( $item ) {
+				return ! is_null( $item->block_name );
+			}
+		);
+
+		/**
+		 * Filter the results of which blocks get usage
+		 *
+		 * @param array $all_blocks Resulting array with all blocks and count of posts containing each block.
+		 * @return array
+		 */
+		return apply_filters( 'which_blocks_get_usage', $all_blocks );
+	}
+
+	/**
+	 * Prepare where clauses
+	 *
+	 * @param array $args Arguments.
+	 * @return array
+	 */
+	public static function where_clauses( $args ) {
+		global $wpdb;
+
+		$where_clauses = array();
+
+		if ( isset( $args['post_type'] ) && is_array( $args['post_type'] ) && count( $args['post_type'] ) ) {
+			$where_clauses[] = $wpdb->prepare( 'post_type IN (' . implode( ',', array_fill( 0, count( $args['post_type'] ), '%s' ) ) . ')', $args['post_type'] );
+		}
+
+		if ( isset( $args['post_status'] ) && is_array( $args['post_status'] ) && count( $args['post_status'] ) ) {
+			$where_clauses[] = $wpdb->prepare( 'post_status IN (' . implode( ',', array_fill( 0, count( $args['post_status'] ), '%s' ) ) . ')', $args['post_status'] );
+		}
+
+		return $where_clauses;
+	}
+
+	/**
+	 * Prepare SQL
+	 *
+	 * @param array $args Arguments.
+	 * @return string
+	 */
+	public static function prepare_sql( $args ) {
+		global $wpdb;
+
+		$where_clauses = self::where_clauses( $args );
+
+		if ( count( $where_clauses ) ) {
+			$where = join( ' AND ', $where_clauses );
+		} else {
+			$where = '';
+		}
+
+		$queries = array();
+
+		foreach ( $args['blocks'] as $block ) {
+			if ( 'core/' === substr( $block, 0, 5 ) ) {
+				$block_name = substr( $block, 5 );
+			} else {
+				$block_name = $block;
+			}
+			$search_pattern = '<!-- wp:' . $block_name . ' ';
+
+			$block_where = $wpdb->prepare( 'WHERE post_content LIKE %s', '%' . $wpdb->esc_like( $search_pattern ) . '%' );
+			if ( $where ) {
+				$block_where .= ' AND ' . $where;
+			}
+
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $block_where is prepared.
+			$queries[] = $wpdb->prepare( "(SELECT %s as block_name, COUNT(*) as cnt FROM {$wpdb->posts} " . $block_where . ' GROUP BY %s)', $block, $block );
+		}
+
+		return join( ' UNION ', $queries ) . ' ORDER BY cnt DESC';
+	}
+
+	/**
+	 * Prepare arguments for get_usage
+	 *
+	 * @param array $args Search arguments.
+	 * @return array
+	 */
+	public static function prepare_args( $args ) {
 		$args = wp_parse_args(
 			$args,
 			array(
 				'post_type'   => array( 'post', 'page' ),
-				'post_status' => 'publish',
+				'post_status' => array( 'publish' ),
 				'blocks'      => 'any',
 				'orderby'     => 'cnt',
 				'order'       => 'DESC',
@@ -47,11 +141,11 @@ class Stats {
 		}
 
 		if ( 'any' === $args['blocks'] ) {
-			$blocks = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
+			$args['blocks'] = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
 		} elseif ( is_array( $args['blocks'] ) ) {
-			$blocks = $args['blocks'];
+			$args['blocks'] = $args['blocks'];
 		} elseif ( is_string( $args['blocks'] ) ) {
-			$blocks = array( $args['blocks'] );
+			$args['blocks'] = array( $args['blocks'] );
 		}
 
 		/**
@@ -60,65 +154,7 @@ class Stats {
 		 * @param array $args Arguments array.
 		 * @return array
 		 */
-		$args = apply_filters( 'which_blocks_get_usage_args', $args );
-
-		if ( ! is_array( $blocks ) || ! count( $blocks ) ) {
-			return array();
-		}
-
-		$where_clauses = array();
-
-		if ( count( $args['post_type'] ) ) {
-			$where_clauses[] .= $wpdb->prepare( 'post_type IN (' . implode( ',', array_fill( 0, count( $args['post_type'] ), '%s' ) ) . ')', $args['post_type'] );
-		}
-
-		if ( count( $args['post_status'] ) ) {
-			$where_clauses[] .= $wpdb->prepare( 'post_status IN (' . implode( ',', array_fill( 0, count( $args['post_status'] ), '%s' ) ) . ')', $args['post_status'] );
-		}
-
-		if ( count( $where_clauses ) ) {
-			$where = join( ' AND ', $where_clauses );
-		} else {
-			$where = '';
-		}
-
-		$queries = array();
-
-		foreach ( $blocks as $block ) {
-			if ( 'core/' === substr( $block, 0, 5 ) ) {
-				$block_name = substr( $block, 5 );
-			} else {
-				$block_name = $block;
-			}
-			$search_pattern = '<!-- wp:' . $block_name . ' ';
-
-			$block_where = $wpdb->prepare( 'WHERE post_content LIKE %s', '%' . $wpdb->esc_like( $search_pattern ) . '%' );
-			if ( $where ) {
-				$block_where .= ' AND ' . $where;
-			}
-
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $block_where is prepared.
-			$queries[] = $wpdb->prepare( "(SELECT %s as block_name, COUNT(*) as cnt FROM {$wpdb->posts} " . $block_where . ' GROUP BY %s)', $block, $block );
-		}
-
-		$sql = join( ' UNION ', $queries ) . ' ORDER BY cnt DESC';
-
-		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on previous steps.
-
-		$all_blocks = array_filter(
-			$results,
-			function( $item ) {
-				return ! is_null( $item->block_name );
-			}
-		);
-
-		/**
-		 * Filter the results of which blocks get usage
-		 *
-		 * @param array $all_blocks Resulting array with all blocks and count of posts containing each block.
-		 * @return array
-		 */
-		return apply_filters( 'which_blocks_get_usage', $all_blocks );
+		return apply_filters( 'which_blocks_get_usage_args', $args );
 	}
 
 	/**

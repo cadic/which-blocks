@@ -1,6 +1,6 @@
 {
   "name": "which-blocks",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "build": "composer install --no-dev",
     "build:dev": "composer install",
@@ -28,13 +28,13 @@
   },
   "homepage": "https://github.com/cadic/which-blocks#readme",
   "devDependencies": {
-    "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#build",
-    "@wordpress/env": "^5.11.0",
+    "@10up/cypress-wp-utils": "^0.1.0",
+    "@wordpress/env": "^5.15.0",
     "10up-toolkit": "^4.3.1",
     "cypress": "^11.2.0",
-    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-cypress": "^2.13.2",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.1"
+    "lint-staged": "^13.2.0"
   },
   "lint-staged": {
     "*.php": [

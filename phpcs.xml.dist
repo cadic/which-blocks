@@ -3,4 +3,5 @@
 	<rule ref="10up-Default" />
 	<file>.</file>
     <exclude-pattern>vendor</exclude-pattern>
+	<exclude-pattern>tests</exclude-pattern>
 </ruleset>
