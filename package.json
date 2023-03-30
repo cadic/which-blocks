@@ -1,6 +1,6 @@
 {
   "name": "which-blocks",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "build": "composer install --no-dev",
     "build:dev": "composer install",
