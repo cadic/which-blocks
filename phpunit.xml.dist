@@ -17,4 +17,12 @@
         <ini name="display_errors" value="On" />
         <ini name="display_startup_errors" value="On" />
     </php>
+	<coverage cacheDirectory=".phpunit.cache/code-coverage" processUncoveredFiles="false">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+		<report>
+			<html outputDirectory="./coverage" />
+		</report>
+    </coverage>
 </phpunit>
