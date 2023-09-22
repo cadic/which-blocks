@@ -87,7 +87,7 @@ jobs:
 
   cypress:
     name: E2E ${{ matrix.core.name }}
-    needs: [changed, jslint, phpcs, phpunit, cache]
+    needs: [changed, phpcs, phpunit, cache]
     if: ${{ needs.changed.outputs.plugin == 'true' }}
     runs-on: ubuntu-latest
     strategy:
