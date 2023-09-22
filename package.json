@@ -28,20 +28,18 @@
   },
   "homepage": "https://github.com/cadic/which-blocks#readme",
   "devDependencies": {
-    "@10up/cypress-wp-utils": "^0.1.0",
-    "@wordpress/env": "^5.15.0",
-    "10up-toolkit": "^4.3.1",
-    "cypress": "^11.2.0",
-    "eslint-plugin-cypress": "^2.13.2",
+    "@10up/cypress-wp-utils": "^0.2.0",
+    "@wordpress/env": "^5.5.0",
+    "10up-toolkit": "^5",
+    "cypress": "^13.2.0",
+    "cypress-mochawesome-reporter": "^3.6.0",
+    "eslint-plugin-cypress": "^2.15.1",
     "husky": "^8.0.3",
-    "lint-staged": "^13.2.0"
+    "lint-staged": "^14.0.1"
   },
   "lint-staged": {
     "*.php": [
       "composer run lint"
-    ],
-    "*.js": [
-      "npx 10up-toolkit format-js"
     ]
   }
 }

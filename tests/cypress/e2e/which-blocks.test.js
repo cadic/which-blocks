@@ -1,5 +1,5 @@
 describe('Basic tests', () => {
-	before(() => {
+	beforeEach(() => {
 		cy.login();
 	});
 
