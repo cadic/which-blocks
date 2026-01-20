@@ -8,7 +8,6 @@
  * Text Domain:     which-blocks
  * Domain Path:     /languages
  * Version:         1.0.2
- * Tested up to:    6.9
  *
  * @package         Which_Blocks
  */
