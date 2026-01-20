@@ -93,7 +93,7 @@ jobs:
     strategy:
       matrix:
         core:
-          - {name: 'WP latest', version: 'latest'}
+          - {name: 'WP 6.9', version: 'WordPress/WordPress#6.9'}
           - {name: 'WP 6.0', version: 'WordPress/WordPress#6.0'}
           - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
     steps:
