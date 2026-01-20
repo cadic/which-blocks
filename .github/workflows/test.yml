@@ -117,6 +117,12 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
+    - name: Setup docker-compose for wp-env
+      run: |
+        echo '#!/bin/bash' | sudo tee /usr/local/bin/docker-compose
+        echo 'exec docker compose "$@"' | sudo tee -a /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        docker-compose --version
     - name: Build (optional)
       run: npm run build
     - name: Set the core version
