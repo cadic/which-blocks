@@ -29,7 +29,7 @@
   "homepage": "https://github.com/cadic/which-blocks#readme",
   "devDependencies": {
     "@10up/cypress-wp-utils": "^0.2.0",
-    "@wordpress/env": "^5.5.0",
+    "@wordpress/env": "^10.38.0",
     "10up-toolkit": "^5",
     "cypress": "^13.2.0",
     "cypress-mochawesome-reporter": "^3.6.0",
