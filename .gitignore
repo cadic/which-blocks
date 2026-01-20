@@ -7,3 +7,4 @@ coverage
 /vendor/
 *.zip
 /tests/cypress/downloads/
+/tests/cypress/reports/

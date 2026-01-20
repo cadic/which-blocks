@@ -23,6 +23,7 @@ jobs:
           composer.json
           composer.lock
           .wp-env.json
+          .github/workflows/test.yml
          
   cache:
     name: Cache the Node
@@ -93,7 +94,7 @@ jobs:
     strategy:
       matrix:
         core:
-          - {name: 'WP latest', version: 'latest'}
+          - {name: 'WP 6.9', version: 'WordPress/WordPress#6.9'}
           - {name: 'WP 6.0', version: 'WordPress/WordPress#6.0'}
           - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
     steps:
@@ -116,6 +117,12 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
+    - name: Setup docker-compose for wp-env
+      run: |
+        echo '#!/bin/bash' | sudo tee /usr/local/bin/docker-compose
+        echo 'exec docker compose "$@"' | sudo tee -a /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        docker-compose --version
     - name: Build (optional)
       run: npm run build
     - name: Set the core version
@@ -125,14 +132,16 @@ jobs:
     - name: Test
       run: npm run cypress:run
     - name: Update summary
+      if: always()
       run: |
         npx mochawesome-merge ./tests/cypress/reports/*.json -o tests/cypress/reports/mochawesome.json
         rm -rf ./tests/cypress/reports/mochawesome-*.json
-        npx mochawesome-json-to-md -p ./tests/cypress/reports/mochawesome.json -o ./tests/cypress/reports/mochawesome.md
         npx mochawesome-report-generator tests/cypress/reports/mochawesome.json -o tests/cypress/reports/
+        # Skip the markdown conversion if it fails, just generate HTML report
+        npx mochawesome-json-to-md -p ./tests/cypress/reports/mochawesome.json -o ./tests/cypress/reports/mochawesome.md 2>/dev/null || echo "# Test Results\nSee HTML report in artifacts" >> ./tests/cypress/reports/mochawesome.md
         cat ./tests/cypress/reports/mochawesome.md >> $GITHUB_STEP_SUMMARY
     - name: Make artifacts available
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: cypress-artifact
